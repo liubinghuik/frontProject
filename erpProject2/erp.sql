@@ -781,7 +781,7 @@ Column3 VARCHAR(50) COMMENT 'column3'
 DROP TABLE IF EXISTS `purchaserequisitionsdetails`;
 CREATE TABLE purchaserequisitionsdetails(
 SerNO INT AUTO_INCREMENT COMMENT '行号' PRIMARY KEY,
-ProdID DATE NOT NULL COMMENT '物料编号',
+ProdID VARCHAR(30) NOT NULL COMMENT '物料编号',
 BillNo VARCHAR(10) COMMENT '单据号码',
 ProdName VARCHAR(30) COMMENT '物料名称',
 ProdSize VARCHAR(30) COMMENT '规格型号',
