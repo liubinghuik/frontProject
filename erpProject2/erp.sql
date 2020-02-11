@@ -790,7 +790,7 @@ SQuantity INT DEFAULT 0 COMMENT '数量',
 CurrID VARCHAR(20) COMMENT '币别',
 SPrice DOUBLE COMMENT '标准进价',
 Amount DOUBLE COMMENT '标准进价金额',
-LastestCurrID INT COMMENT '最后一次交易币别',
+LastestCurrID VARCHAR(10) COMMENT '最后一次交易币别',
 LastestPrice DOUBLE COMMENT '最后一次交易单价',
 LastestAmount DOUBLE COMMENT '最后一次交易进价金额',
 PreInDate DATE COMMENT '需求日期',
@@ -934,7 +934,7 @@ CREATE TABLE `tpurchasereceipt` (
 ##采购入库明细表
 DROP TABLE IF EXISTS `tpurchasereceiptdetails`;
 CREATE TABLE `tpurchasereceiptdetails` (
-  `LineNo` INT(11) DEFAULT NULL COMMENT '自增,行号',
+  `LineNo` VARCHAR(30) DEFAULT NULL COMMENT '自增,行号',
   `ProdID` INT(11) DEFAULT NULL COMMENT '物料编号，来源物料主文件',
   `ProdName` VARCHAR(30) DEFAULT NULL COMMENT '不可编辑	物料名称，来源物料主文件',
   `ProdSize` VARCHAR(20) DEFAULT NULL COMMENT '不可编辑	规格型号，来源物料主文件',
