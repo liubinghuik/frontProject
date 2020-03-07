@@ -27,7 +27,6 @@
 						<div class="layui-input-inline">
 							<input type="text" name="seachPaymentNo" placeholder="输入单号查询" class="layui-input" />
 						</div>
-						<span class="layui-icon layui-icon-search" style="font-size: 1.875rem;"></span>
 					</div>
 					<div class="layui-col-md4">
 						<label class="layui-form-label">日期选择</label>
@@ -35,18 +34,17 @@
 							<!-- 时间控件 -->
 							<input type="text" class="layui-input" id="seachPaymentTime" placeholder=" - ">
 						</div>
-						<span class="layui-icon layui-icon-search" style="font-size: 1.875rem;"></span>
 					</div>
 					<div class="layui-col-md4">
 						<div class="layui-input-inline">
 							<!-- 供应商选择 -->
 							<select name="seachPMgysId" class="layui-select">
-								<option value="0">选择供应商</option>
+								<!-- <option value="0">选择供应商</option>
 								<option value="1">layer</option>
-								<option value="2">form</option>
+								<option value="2">form</option> -->
 							</select>
 						</div>
-						<span class="layui-icon layui-icon-search" style="font-size: 1.875rem;"></span>
+						<button class="layui-btn layui-btn-normal" onclick="getPaymentPageDate()">搜索</button>
 					</div>
 				</div>
 				<table class="layui-table">
@@ -61,7 +59,7 @@
 							<th>操作</th>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody id="payments">
 						<tr>
 							<td>1</td>
 							<td>20191219001</td>
@@ -83,23 +81,130 @@
 		<script src="../js/jquery.min.js"></script>
 		<script>
 			/* 分页 */
-			var paymentpage = layui.laypage;
-			paymentpage.render({
-				elem: 'paymentpage',
-				count: 50,
-				limit: 10,
-				groups: 3,
-				jump: function(obj, first) {
-					/* 跳转回调 */
+			let total;
+			let pageNum = 1;
+			let pageSize = 10;
+			let startseachtime;
+			let endseachtime;
+			let baseURL = "http://localhost:8080/";
+			$(function() {
+				getSupplierDate();
+				getPaymentPageDate();
+			})
+
+			function getPaymentPageDate() {
+				let id = $("[name=seachPaymentNo]").val();
+				let sid = $("[name=seachPMgysId]").val();
+				if (sid == 0) {
+					sid = null;
 				}
-			});
+				if (startseachtime == "undefined-undefined-undefined") {
+					startseachtime = null;
+				}
+				if (endseachtime == "undefined-undefined-undefined") {
+					endseachtime = null;
+				}
+				$.getJSON(baseURL + "payment/ShowPayments", {
+						"id": id,
+						"sid": sid,
+						"pageNum": pageNum,
+						"pageSize": pageSize,
+						"startseachtime": startseachtime,
+						"endseachtime": endseachtime
+					},
+					function(result) {
+						// console.info(result);
+						total = result.total;
+						$("#payments").empty();
+						if (result.list != null && result.list.length > 0) {
+							$(result.list).each(function(i, obj) {
+								let state = "未审核";
+								if (obj.auditstate == 2) {
+									state = "已审核"
+								}
+								let tr = "<tr>" +
+									"<td>" + (i + 1) + "</td>" +
+									"<td>" + obj.id + "</td>" +
+									"<td>" + obj.sname + "</td>" +
+									"<td>" + obj.date + "</td>" +
+									"<td>" + state + "</td>" +
+									"<td>" + obj.money + "</td>" +
+									"<td>" +
+									"<button class='layui-btn layui-btn-normal' data-method='opPmck' onclick='pmLayerClick(this)'>查看</button>" +
+									"<button class='layui-btn layui-btn-danger' onclick='deletePm(" + obj.id + ")'>删除</button>" +
+									"</td>" +
+									"</tr>";
+								$("#payments").append(tr);
+							});
+						}
+						showPage();
+					});
+			}
+			/* 加载分页插件 */
+			function showPage() {
+				var paymentpage = layui.laypage;
+				paymentpage.render({
+					elem: 'paymentpage',
+					count: total,
+					limit: pageSize,
+					groups: 3,
+					jump: function(obj, first) {
+						/* 跳转回调 */
+						pageNum = obj.curr;
+						if (!first) {
+							getPaymentPageDate();
+						}
+					}
+				});
+			}
+			/* 删除单据 */
+			function deletePm(id) {
+				if (!confirm("确认删除该单据吗？")) {
+					return;
+				}
+				$.post(baseURL + "payment/deletePayment", {
+					id: id
+				}, function(result) {
+					if (result == 101) {
+						alert("已经审核，不能删除");
+					} else {
+						getPaymentPageDate();
+					}
+				})
+			}
+			/* 加载供应商数据 */
+			function getSupplierDate() {
+				$.getJSON(baseURL + "supplier/showSupList", function(result) {
+					// console.info(result);
+					// <option value="0">选择供应商</option>
+					$("[name=seachPMgysId]").empty();
+					$("[name=seachPMgysId]").append("<option value='0'>选择供应商</option>")
+					if (result != null && result.length > 0) {
+						$(result).each(function(i, obj) {
+							let op = "<option value='" + obj.sid + "'>" + obj.fullname + "</option>";
+							$("[name=seachPMgysId]").append(op);
+						})
+					}
+				})
+			}
 			/* 时间插件 */
 			var paymentlaydate = layui.laydate;
 			paymentlaydate.render({
 				elem: '#seachPaymentTime',
 				type: 'date',
-				range: true
+				range: true,
+				done: function(value, date, endDate) {
+					startseachtime = changeDate(date);
+					endseachtime = changeDate(endDate);
+				}
 			});
+
+			function changeDate(obj) {
+				let FullYear = obj.year;
+				let Month = obj.month;
+				let Day = obj.date;
+				return FullYear + "-" + Month + "-" + Day;
+			}
 			/* layer插件 */
 			var pmlayer = layui.layer;
 			var pmactive = {
@@ -117,6 +222,7 @@
 				},
 				opPmck: function() {
 					var that = this;
+					let id = $(that).parents("tr").find("td").get(1).innerText;
 					pmlayer.open({
 						type: 2,
 						title: '查看冲款单',
@@ -125,6 +231,14 @@
 						area: ['1033px', '90%'],
 						content: 'xcjCheckPayment.html',
 						zIndex: pmlayer.zIndex, //重点1
+						success: function(iframe, index) { //iframe=>div
+							//获取子页面中body节点,通过jquery查找节点方式进行赋值
+							let body = layer.getChildFrame('body', index); //获取的子页面HTML所有类容
+							//获取子页面的窗体对象,通过窗体对象对js中的变量或者函数进行调用
+							let iframeWin = window[iframe.find('iframe')[0]['name']];
+							// iframeWin.getSupplierDate();
+							iframeWin.getPmDate(id);
+						}
 					});
 				}
 			};

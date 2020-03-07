@@ -14,11 +14,8 @@
 				<div class="layui-inline layui-col-md5">
 					<label class="layui-form-label">供应商</label>
 					<div class="layui-input-inline">
-						<select name="addPMgysId" lay-verify="required" lay-search="" class="layui-select">
-							<option value="0">选择供应商</option>
-							<option value="1">layer</option>
-							<option value="2">form</option>
-						</select>
+						<input type="hidden" name="addPMgysId"/>
+						<input type="text" name="addPmgyName" readonly="readonly" class="layui-input layui-input-inline" title="F4选择供应商人员" onkeyup="xzSupplier(event)" />
 					</div>
 				</div>
 				<div class="layui-inline layui-col-md5">
@@ -53,7 +50,7 @@
 				</div>
 				<div class="layui-inline layui-col-md5">
 					<label class="layui-form-label">币别</label>
-					<input type="text" name="addPMId" class="layui-input layui-input-inline" />
+					<input type="text" name="addPMCId" class="layui-input layui-input-inline" />
 				</div>
 			</div>
 			<div class="layui-form-item layui-row">
@@ -92,15 +89,11 @@
 										<th>单别</th>
 										<th>原单日期</th>
 										<th>原单单号</th>
-										<th>发票号码</th>
 										<th>交易对象</th>
 										<th>交易对象名称</th>
 										<th>部门编号</th>
 										<th>部门名称</th>
 										<th>采购人员</th>
-										<th>项目名称</th>
-										<th>币别</th>
-										<th>汇率</th>
 										<th>原单金额</th>
 										<th>现行余额</th>
 										<th>折让金额</th>
@@ -108,8 +101,8 @@
 										<th>冲抵金额</th>
 									</tr>
 								</thead>
-								<tbody>
-									<tr>
+								<tbody id="addpmds">
+									<!-- <tr>
 										<td>1</td>
 										<td></td>
 										<td></td>
@@ -124,11 +117,7 @@
 										<td></td>
 										<td></td>
 										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-									</tr>
+									</tr> -->
 								</tbody>
 							</table>
 						</div>
@@ -138,21 +127,19 @@
 							<table class="layui-table">
 								<thead>
 									<tr>
-										<th>应付冲款单号</th>
 										<th>来源单号</th>
 										<th>预付金额</th>
 										<th>剩余金额</th>
 										<th>取用金额</th>
 									</tr>
 								</thead>
-								<tbody>
-									<tr>
+								<tbody id="addPmps">
+									<!-- <tr>
 										<td></td>
 										<td></td>
 										<td></td>
 										<td></td>
-										<td></td>
-									</tr>
+									</tr> -->
 								</tbody>
 							</table>
 						</div>
@@ -179,38 +166,269 @@
 			</div>
 			<div class="layui-form-item layui-row">
 				<div class="layui-inline layui-col-md5">
-					<label class="layui-form-label">所属部门</label>
-					<input type="text" name="addPMdepartment" class="layui-input layui-input-inline" />
-				</div>
-				<div class="layui-inline layui-col-md5">
-					<label class="layui-form-label">制单人员</label>
-					<input type="text" name="addPMprepare-document" class="layui-input layui-input-inline" />
-				</div>
-			</div>
-			<div class="layui-form-item layui-row">
-				<div class="layui-inline layui-col-md5">
 					<label class="layui-form-label">所属项目</label>
 					<input type="text" name="addPMproject" class="layui-input layui-input-inline" />
 				</div>
-				<div class="layui-inline layui-col-md5">
-					<label class="layui-form-label">复核人员</label>
-					<input type="text" name="addPMre-check" class="layui-input layui-input-inline" />
-				</div>
 			</div>
 			<div class="layui-btn-container">
-				<button type="button" class="layui-btn">载入账单</button>
-				<button type="button" class="layui-btn">载入预付</button>
-				<button type="button" class="layui-btn">冲抵账款</button>
-				<button type="button" class="layui-btn">保存</button>
+				<button type="button" class="layui-btn" onclick="getZD()">载入账单</button>
+				<button type="button" class="layui-btn" onclick="postZDp()">载入预付</button>
+				<button type="button" class="layui-btn" onclick="autoCalculation()">冲抵账款</button>
+				<button type="button" class="layui-btn" onclick="savePayment()">保存</button>
 			</div>
 		</div>
 		<script src="../layui.all.js"></script>
 		<script src="../js/jquery.min.js"></script>
-		<script>
+		<script type="text/javascript">
+			let baseURL = "http://localhost:8080/";
+			let isCalculation=0;
+			/* layer插件 */
+			let addPlayer = layui.layer;
+			/* 打开选择供应商页面 */
+			function xzSupplier(event) {
+				if(event.keyCode!=115){
+					return;
+				}
+				addPlayer.open({
+					type: 2,
+					title: "单选--供应商页面",
+					content: "xcjGetSupplier.html",
+					area: ['762px', '450px']
+				})
+			}
+			/* 加载供应商数据 */
+			function getSupplierDate(id) {
+				$.getJSON(baseURL + "supplier/showSupplierBysid", {sid:id},function(result) {
+					// console.info(result);
+					// <option value="0">选择供应商</option>
+					$("[name=addPMgysId]").val(result.sid);
+					$("[name=addPmgyName]").val(result.fullname);
+				})
+			}
+			/* 自动计算 */
+			function autoCalculation(){
+				//设置预付款，现行金额，支付金额,汇率,折扣
+				let prepay=0.0;
+				let money=0.0;
+				let payment=0.0;
+				let exchangerate=$("[name=addPMexchange-rate]").val();
+				let discount=$("[name=addPMdiscount]").val();
+				//判断是否有预付款信息得到预付款
+				if($("#addPmps>tr").length>0){
+					$("#addPmps>tr").each(function(){
+						prepay += Number($(this).find("td").get(3).innerText);
+						console.info(1)
+					})
+				}
+				//得到现行金额
+				if ($("#addpmds>tr").length>0) {
+					$("#addpmds>tr").each(function(){
+						money += Number($(this).find("td").get(10).innerText);
+						console.info(money)
+					})
+				} else{
+					alert("没有应付款信息")
+					return;
+				}
+				//得到支付金额
+				if ($("[name=addPMPayMoney1]").val()!=""||$("[name=addPMPayMoney2]").val()!="") {
+					payment=Number($("[name=addPMPayMoney1]").val())+Number($("[name=addPMPayMoney2]").val())
+				} else{
+					alert("没有支付信息")
+					return;
+				}
+				console.info("预付款"+prepay);
+				console.info("支付款"+payment);
+				console.info("应付款"+(money*(discount/100)));
+				//判断预付款+支付金额是否等于现行金额*折扣
+				if ((Number(payment)+Number(prepay))==Number(money*(discount/100))) {
+					//相等将对应信息进行渲染
+					// 渲染付款信息
+					//得到现行金额
+					if ($("#addpmds>tr").length>0) {
+						$("#addpmds>tr").each(function(){
+							let tbalance=$(this).find("td").get(10).innerText;
+							let trebate=0;
+							trebate=tbalance-tbalance*(discount/100);
+							$(this).find("td").get(10).innerText=0;
+							$(this).find("td").get(11).innerText=trebate;
+							$(this).find("td").get(12).innerText=tbalance*(discount/100);
+							$(this).find("td").get(13).innerText=tbalance*(discount/100);
+						})
+					}
+					isCalculation=1;
+				} else{
+					alert("支付金额与应付金额不一致");
+					return
+				}
+			}
+			/* 加载预付款信息 */
+			function postZDp() {
+				let sid = $("[name=addPMgysId]").val();
+				if (sid == null || sid == "" || sid == 0) {
+					alert("请选择供应商");
+					return;
+				}
+				$.getJSON(baseURL + "payment/postZDp", {
+					sid: sid
+				}, function(result) {
+					// console.info(result)
+					$("#addPmps").empty();
+					if (result != null && result.length > 0) {
+						$(result).each(function(i, obj) {
+							let tr = "<tr>" +
+								"<td>"+obj.prepayid+"</td>" +
+								"<td>"+obj.money+"</td>" +
+								"<td>"+obj.balance+"</td>" +
+								"<td>"+obj.takenmoney+"</td>" +
+								"</tr>";
+							$("#addPmps").append(tr);
+						})
+					}
+				})
+			}
+			/* 加载应付款信息 */
+			function getZD() {
+				let sid = $("[name=addPMgysId]").val();
+				if (sid == null || sid == "" || sid == 0) {
+					alert("请选择供应商");
+					return;
+				}
+				$.getJSON(baseURL + "payment/postZD", {
+					sid: sid
+				}, function(result) {
+					// console.info(result);
+					$("#addpmds").empty();
+					$(result).each(function(i, obj) {
+						if (obj.rebate == null) {
+							obj.rebate = 0;
+						}
+						let tr = "<tr>" +
+							"<td>" + (i + 1) + "</td>" +
+							"<td>" + obj.sourcetype + "</td>" +
+							"<td>" + obj.sourcedate + "</td>" +
+							"<td>" + obj.sourceno + "</td>" +
+							"<td>" + obj.sid + "</td>" +
+							"<td>" + obj.sname + "</td>" +
+							"<td>" + obj.departid + "</td>" +
+							"<td>" + obj.departname + "</td>" +
+							"<td>" + obj.buyer + "</td>" +
+							"<td>" + obj.payment + "</td>" +
+							"<td>" + obj.balance + "</td>" +
+							"<td>" + obj.rebate + "</td>" +
+							"<td></td>" +
+							"<td></td>" +
+							"</tr>";
+						$("#addpmds").append(tr);
+					})
+				})
+			}
+			
+			/* 保存单据 */
+			function savePayment(){
+				if(isCalculation!=1){
+					alert("请进行冲账")
+					return;
+				}
+				let tpayment={
+					tpaymentdetails:[],
+					tpaymentprepays:[]
+				}
+				tpayment.sid=$("[name=addPMgysId]").val();
+				tpayment.paymentmethod1=$("[name=paymentWay1]").val();
+				tpayment.paymentamout1=$("[name=addPMPayMoney1]").val();
+				tpayment.id=$("[name=addPMId]").val();
+				tpayment.paymentmethod2=$("[name=paymentWay2]").val();
+				tpayment.paymentamout2=$("[name=addPMPayMoney2]").val();
+				tpayment.currencyid=$("[name=addPMCId]").val();
+				tpayment.discount=$("[name=addPMdiscount]").val();
+				tpayment.exchangerate=$("[name=addPMexchange-rate]").val();
+				tpayment.enddate=$("[name=addPMprompt]").val();
+				tpayment.vouchercode=$("[name=addPMDocument-Number]").val();
+				tpayment.custom1=$("[name=addPMcustom1]").val();
+				tpayment.custom2=$("[name=addPMcustom12]").val();
+				tpayment.remark=$("[name=addPMremark]").val();
+				tpayment.project=$("[name=addPMproject]").val();
+				tpayment.date=$("[name=addPaymentTime]").val();
+				// 详表信息
+				if ($("#addpmds>tr").length>0) {
+					$("#addpmds>tr").each(function(){
+						let tpaymentdetail={};
+						tpaymentdetail.id=$($(this).find("input").get(0)).val();
+						tpaymentdetail.sourcetype=$(this).find("td").get(1).innerText;
+						tpaymentdetail.sourcedate=$(this).find("td").get(2).innerText;
+						tpaymentdetail.sourceno=$(this).find("td").get(3).innerText;
+						tpaymentdetail.sid=$(this).find("td").get(4).innerText;
+						tpaymentdetail.sname=$(this).find("td").get(5).innerText;
+						tpaymentdetail.departid=$(this).find("td").get(6).innerText;
+						tpaymentdetail.departname=$(this).find("td").get(7).innerText;
+						tpaymentdetail.buyer=$(this).find("td").get(8).innerText;
+						tpaymentdetail.payment=$(this).find("td").get(9).innerText;
+						tpaymentdetail.balance=$(this).find("td").get(10).innerText;
+						tpaymentdetail.rebate=$(this).find("td").get(11).innerText;
+						tpaymentdetail.money=$(this).find("td").get(12).innerText;
+						tpaymentdetail.chargeagainst=$(this).find("td").get(13).innerText;
+						tpayment.tpaymentdetails.push(tpaymentdetail);
+					})
+				} else{
+					tpayment.tpaymentdetails=null;
+				}
+				// 预付款信息
+				if ($("#addPmps>tr").length>0) {
+					$("#addPmps>tr").each(function(){
+						let tpaymentprepay={};
+						tpaymentprepay.prepayid=$(this).find("td").get(0).innerText;
+						tpaymentprepay.takenmoney=$(this).find("td").get(3).innerText;
+						tpayment.tpaymentprepays.push(tpaymentprepay);
+					})
+				} else{
+					tpayment.tpaymentprepays=null;
+				}
+				// 如果有必填项为空
+				if (tpayment.date == null || tpayment.date == "") {
+					alert("请选择日期");
+					return;
+				}
+				if (tpayment.sid == null || tpayment.sid == "" || tpayment.sid == 0) {
+					alert("请选择供应商");
+					return;
+				}
+				$.ajax({
+					url: baseURL + "payment/addPayment",
+					data: JSON.stringify(tpayment),
+					type: "post",
+					contentType: "application/json;charset=utf-8",
+					success: function(res) {
+						if (res > 0) {
+							// 调用父窗体查询方法
+							parent.getPaymentPageDate();
+							// parent.showPage();
+							//关闭layer弹出层
+							var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+							parent.layer.close(index);
+						} else {
+							alert("出现错误，保存失败");
+						}
+					}
+				}); 
+			}
+			/* 选择日期自动生成单据编号 */
+			function getId(value) {
+				let date = value;
+				$.get(baseURL + "payment/postId", {
+					date: date
+				}, function(result) {
+					// console.info(result);
+					$("[name=addPMId]").val(result);
+				})
+			}
 			var addpaymentlaydate = layui.laydate;
 			//执行一个laydate实例
 			addpaymentlaydate.render({
-				elem: '#addPaymentTime' //指定元素
+				elem: '#addPaymentTime', //指定元素
+				done: function(value, date, endDate) {
+					getId(value);
+				}
 			});
 			addpaymentlaydate.render({
 				elem: '#addPMprompt',

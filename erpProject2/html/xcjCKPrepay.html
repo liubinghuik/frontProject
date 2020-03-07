@@ -31,10 +31,10 @@
 				<div class="layui-inline layui-col-md5">
 					<label class="layui-form-label">供应商</label>
 					<div class="layui-input-inline">
-						<select name="addPMgysId" lay-verify="required" lay-search="" class="layui-select">
-							<option value="0">选择供应商</option>
+						<select name="xcjCKPPgysId" lay-verify="required" lay-search="" class="layui-select">
+							<!-- <option value="0">选择供应商</option>
 							<option value="1">layer</option>
-							<option value="2">form</option>
+							<option value="2">form</option> -->
 						</select>
 					</div>
 				</div>
@@ -70,7 +70,7 @@
 				</div>
 				<div class="layui-inline layui-col-md5">
 					<label class="layui-form-label">币别</label>
-					<input type="text" name="addPMId" class="layui-input layui-input-inline" />
+					<input type="text" name="addPMCId" class="layui-input layui-input-inline" />
 				</div>
 			</div>
 			<div class="layui-form-item layui-row">
@@ -86,7 +86,7 @@
 			<div class="layui-form-item layui-row">
 				<div class="layui-inline layui-col-md5">
 					<label class="layui-form-label">冲款帐月</label>
-					<input type="text" class="layui-input layui-input-inline" id="xcjCKPPprompt" placeholder="yyyyMMdd">
+					<input type="text" class="layui-input layui-input-inline" name="xcjCKPPprompt" id="xcjCKPPprompt" placeholder="yyyyMMdd">
 				</div>
 				<div class="layui-inline layui-col-md5">
 					<label class="layui-form-label">凭证编号</label>
@@ -110,13 +110,13 @@
 										<th>摘要</th>
 									</tr>
 								</thead>
-								<tbody>
-									<tr>
+								<tbody id="xcjCJPPDs">
+									<!-- <tr>
+										<td><input type="number" min="0"></td>
 										<td></td>
 										<td></td>
-										<td></td>
-										<td></td>
-									</tr>
+										<td><textarea></textarea></td>
+									</tr> -->
 								</tbody>
 							</table>
 						</div>
@@ -162,7 +162,6 @@
 				</div>
 			</div>
 			<div class="layui-btn-container" id="xcjCKPPsave">
-				<button type="button" class="layui-btn" id="xcjCKPPloadbtn">载入账单</button>
 				<button type="button" class="layui-btn" id="xcjCKPPsavebtn">保存</button>
 			</div>
 			<div class="layui-btn-container" id="xcjCKPPupdate">
@@ -174,6 +173,9 @@
 		<script src="../layui.all.js"></script>
 		<script src="../js/jquery.min.js"></script>
 		<script>
+			/* 审核变量 */
+			var xcjPPISCK = 0;
+			let baseURL = "http://localhost:8080/";
 			var xcjcjpaymentlaydate = layui.laydate;
 			//执行一个laydate实例
 			xcjcjpaymentlaydate.render({
@@ -184,25 +186,27 @@
 				format: 'yyyyMMdd'
 			});
 			$(function() {
-				/* 审核变量 */
-				var xcjPPISCK=0;
-				/* 默认不能修改数据 */
-				$("#xcjCKPPInfo input").attr("disabled", "disabled");
-				$("#xcjCKPPInfo select").attr("disabled", "disabled");
-				$("#xcjCKPPInfo textarea").attr("disabled", "disabled");
+				getSupplierDate();
 				/* 点击修改 */
 				$("#xcjCKPPupbtn").on("click", function() {
-					if(xcjPPISCK==1){
-						return false;
+					if (xcjPPISCK == 1) {
+						return;
 					}
 					$("#xcjCKPPInfo input").removeAttr("disabled", "false");
 					$("#xcjCKPPInfo select").removeAttr("disabled", "false");
 					$("#xcjCKPPInfo textarea").removeAttr("disabled", "disabled");
+					$("[name=xcjCKPPgysId]").attr("disabled", "disabled");
+					$("[name=xcjCKPPTime]").attr("disabled", "disabled");
+					$("[name=addPMId]").attr("disabled", "disabled");
+					$("[name=addPMdepartment]").attr("disabled", "disabled");
+					$("[name=addPMprepare-document]").attr("disabled", "disabled");
+					$("[name=addPMre-check]").attr("disabled", "disabled");
 					$("#xcjCKPPupdate").hide();
 					$("#xcjCKPPsave").show();
 				});
 				/* 点击保存 */
 				$("#xcjCKPPsavebtn").on("click", function() {
+					savePP();
 					$("#xcjCKPPInfo input").attr("disabled", "disabled");
 					$("#xcjCKPPInfo select").attr("disabled", "disabled");
 					$("#xcjCKPPInfo textarea").attr("disabled", "disabled");
@@ -211,18 +215,179 @@
 				});
 				/* 审核与反审核 */
 				$("#xcjCKPPckbtn").on("click", function() {
-					xcjPPISCK=1;
-					$(".xcjshenhe").show();
-					$("#xcjCKPPckbtn").hide();
-					$("#xcjCKPPCCckbtn").show();
+					let id=$("[name=addPMId]").val();
+					$.post(baseURL + "tprepar/ckTprepay",{id:id},function(result){
+						// console.info(result);
+						if(result>0){
+							// 调用父窗体查询方法
+							parent.getPrepayPageDate();
+							xcjPPISCK = 1;
+							$(".xcjshenhe").show();
+							$("#xcjCKPPckbtn").hide();
+							$("#xcjCKPPCCckbtn").show();
+						}
+					})
 				});
 				$("#xcjCKPPCCckbtn").on("click", function() {
-					xcjPPISCK=0
-					$(".xcjshenhe").hide();
-					$("#xcjCKPPckbtn").show();
-					$("#xcjCKPPCCckbtn").hide();
+					let id=$("[name=addPMId]").val();
+					$.post(baseURL + "tprepar/cancelCKTprepay",{id:id},function(result){
+						console.info(result);
+						if(result==101){
+							alert("单据已被调用，操作无效")
+							isOK=0;
+						}else{
+							// 调用父窗体查询方法
+							parent.getPaymentPageDate();
+							xcjPPISCK = 0
+							$(".xcjshenhe").hide();
+							$("#xcjCKPPckbtn").show();
+							$("#xcjCKPPCCckbtn").hide();
+						}
+					})		
 				});
 			})
+			/* 保存信息 */
+			function savePP(){
+				let saveres=0;
+				let tprepay={
+					prepaydetails: []
+				};
+				tprepay.sid=$("[name=xcjCKPPgysId]").val();
+				tprepay.date=$("[name=xcjCKPPTime]").val();
+				tprepay.paymentmethod1=$("[name=paymentWay1]").val();
+				tprepay.paymentamout1=$("[name=addPMPayMoney1]").val();
+				tprepay.paymentmethod2=$("[name=paymentWay2]").val();
+				tprepay.paymentamout2=$("[name=addPMPayMoney2]").val();
+				tprepay.id=$("[name=addPMId]").val();
+				tprepay.currencyid=$("[name=addPMCId]").val();
+				tprepay.discount=$("[name=addPMdiscount]").val();
+				tprepay.exchangerate=$("[name=addPMexchange-rate]").val();
+				tprepay.enddate=$("[name=xcjCKPPprompt]").val();
+				tprepay.vouchercode=$("[name=addPMDocument-Number]").val();
+				tprepay.custom1=$("[name=addPMcustom1]").val();
+				tprepay.custom2=$("[name=addPMcustom12]").val();
+				tprepay.remark=$("[name=addPMremark]").val();
+				tprepay.project=$("[name=addPMproject]").val();
+				$("#xcjCJPPDs>tr").each(function(i,obj){
+					let prepayde = {};
+					prepayde.prepay = $(this).find("input").get(0).value;
+					prepayde.id = $(this).find("input").get(1).value;
+					prepayde.sourceno = $(this).find("td").get(2).innerText;
+					prepayde.sourcetype = $(this).find("td").get(1).innerText;
+					prepayde.remark = $(this).find("textarea").get(0).value;
+					tprepay.prepaydetails.push(prepayde); 
+				})
+				// console.info(tprepay);
+				let payMoney = (Number(tprepay.paymentamout1) + Number(tprepay.paymentamout2)) * (tprepay.discount / 100);
+				let willMoney = 0;
+				// console.info(payMoney);
+				$(tprepay.prepaydetails).each(function(i, obj) {
+					willMoney +=Number(obj.prepay);
+					// console.info(willMoney);
+				})
+				// 如果支付的金额不一致则不能保存
+				if (payMoney != willMoney) {
+					alert("支付金额不一致");
+					return;
+				}
+				// 如果有必填项为空
+				if (tprepay.date == null || tprepay.date == "") {
+					alert("请选择日期");
+					return;
+				}
+				if (tprepay.sid == null || tprepay.sid == "" || tprepay.sid == 0) {
+					alert("请选择供应商");
+					return;
+				}
+				if (payMoney == null || payMoney == 0) {
+					alert("请输入预付款");
+					return;
+				}
+				$.ajax({
+					url: baseURL + "tprepar/updateTprepay",
+					data: JSON.stringify(tprepay),
+					type: "post",
+					contentType: "application/json;charset=utf-8",
+					success: function(res) {
+						if (res > 0) {
+							saveres=1;
+							// 调用父窗体查询方法
+							parent.getPrepayPageDate();
+							//关闭layer弹出层
+							var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+							parent.layer.close(index);
+						} else {
+							alert("出现错误，保存失败");
+						}
+					}
+				});
+				return saveres;
+			}
+			/* 加载供应商数据 */
+			function getSupplierDate() {
+				$.getJSON(baseURL + "supplier/showSupList", function(result) {
+					// console.info(result);
+					// <option value="0">选择供应商</option>
+					$("[name=xcjCKPPgysId]").empty();
+					$("[name=xcjCKPPgysId]").append("<option value='0'>选择供应商</option>")
+					if (result != null && result.length > 0) {
+						$(result).each(function(i, obj) {
+							let op = "<option value='" + obj.sid + "'>" + obj.fullname + "</option>";
+							$("[name=xcjCKPPgysId]").append(op);
+						})
+					}
+					/* 默认不能修改数据 */
+					$("#xcjCKPPInfo input").attr("disabled", "disabled");
+					$("#xcjCKPPInfo select").attr("disabled", "disabled");
+					$("#xcjCKPPInfo textarea").attr("disabled", "disabled");
+				})
+			}
+			/* 加载单据数据 */
+			function getPPDate(id) {
+				$.getJSON(baseURL + "tprepar/showPrepayById", {
+					id: id
+				}, function(result) {
+					// console.info(result);
+					$("[name=xcjCKPPgysId]").val(result.sid);
+					$("[name=xcjCKPPTime]").val(result.date);
+					$("[name=paymentWay1]").val(result.paymentmethod1);
+					$("[name=addPMPayMoney1]").val(result.paymentamout1);
+					$("[name=paymentWay2]").val(result.paymentmethod2);
+					$("[name=addPMPayMoney2]").val(result.paymentamout2);
+					$("[name=addPMId]").val(result.id);
+					$("[name=addPMCId]").val(result.currencyid);
+					$("[name=addPMdiscount]").val(result.discount);
+					$("[name=addPMexchange-rate]").val(result.exchangerate);
+					$("[name=xcjCKPPprompt]").val(result.enddate);
+					$("[name=addPMDocument-Number]").val(result.vouchercode);
+					$("[name=addPMcustom1]").val(result.custom1);
+					$("[name=addPMcustom12]").val(result.custom2);
+					$("[name=addPMremark]").val(result.remark);
+					$("[name=addPMdepartment]").val(result.departName);
+					$("[name=addPMre-check]").val(result.auditmanName);
+					$("[name=addPMprepare-document]").val(result.vouchingmanName);
+					$("[name=addPMproject]").val(result.project);
+					$("#xcjCJPPDs").empty();
+					$(result.prepaydetails).each(function(i,obj) {
+						let tr = "<tr>" +
+							"<td><input type='number' min='0' value="+obj.prepay+"><input type='hidden' value="+obj.id+"></td>" +
+							"<td>"+obj.sourcetype+"</td>" +
+							"<td>"+obj.sourceno+"</td>" +
+							"<td><textarea value="+obj.remark+"></textarea></td>" +
+							"</tr>";
+						$("#xcjCJPPDs").append(tr);
+					});
+					if(result.auditstate==2){
+						xcjPPISCK = 1;
+						$(".xcjshenhe").show();
+						$("#xcjCKPPckbtn").hide();
+						$("#xcjCKPPCCckbtn").show();
+					}
+					// $("#xcjCKPPInfo input").attr("disabled", "disabled");
+					// $("#xcjCKPPInfo select").attr("disabled", "disabled");
+					// $("#xcjCKPPInfo textarea").attr("disabled", "disabled");
+				});
+			}
 		</script>
 	</body>
 </html>

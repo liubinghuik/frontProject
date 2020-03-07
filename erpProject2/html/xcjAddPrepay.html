@@ -14,11 +14,9 @@
 				<div class="layui-inline layui-col-md5">
 					<label class="layui-form-label">供应商</label>
 					<div class="layui-input-inline">
-						<select name="xcjAddPPgysID" lay-verify="required" lay-search="" class="layui-select">
-							<option value="0">选择供应商</option>
-							<option value="1">layer</option>
-							<option value="2">form</option>
-						</select>
+						<input type="hidden" name="xcjAddPPgysID" />
+						<input type="text" name="addPPgyName" readonly="readonly" class="layui-input layui-input-inline" title="F4选择供应商人员"
+						 onkeyup="xzSupplier(event)" />
 					</div>
 				</div>
 				<div class="layui-inline layui-col-md5">
@@ -35,7 +33,7 @@
 						<option>汇款</option>
 						<option>现金</option>
 					</select>
-					<input type="text" name="addPMPayMoney1" class="layui-input layui-input-inline" />
+					<input type="number" min="0" name="addPMPayMoney1" class="layui-input layui-input-inline" />
 				</div>
 				<div class="layui-inline layui-col-md5">
 					<label class="layui-form-label">单据编号</label>
@@ -49,11 +47,11 @@
 						<option>汇款</option>
 						<option>现金</option>
 					</select>
-					<input type="text" name="addPMPayMoney2" class="layui-input layui-input-inline" />
+					<input type="number" min="0" name="addPMPayMoney2" class="layui-input layui-input-inline" />
 				</div>
 				<div class="layui-inline layui-col-md5">
 					<label class="layui-form-label">币别</label>
-					<input type="text" name="addPMId" class="layui-input layui-input-inline" />
+					<input type="text" name="addPMCId" class="layui-input layui-input-inline" value="RMB" />
 				</div>
 			</div>
 			<div class="layui-form-item layui-row">
@@ -69,7 +67,7 @@
 			<div class="layui-form-item layui-row">
 				<div class="layui-inline layui-col-md5">
 					<label class="layui-form-label">冲款帐月</label>
-					<input type="text" class="layui-input layui-input-inline" id="xcjAddPPprompt" placeholder="yyyyMMdd">
+					<input type="text" class="layui-input layui-input-inline" id="xcjAddPPprompt" name="xcjAddPPprompt" placeholder="yyyyMMdd">
 				</div>
 				<div class="layui-inline layui-col-md5">
 					<label class="layui-form-label">凭证编号</label>
@@ -93,13 +91,13 @@
 										<th>摘要</th>
 									</tr>
 								</thead>
-								<tbody>
-									<tr>
+								<tbody id="addPPDs">
+									<!-- <tr>
+										<td><input type="number" min="0"></td>
 										<td></td>
 										<td></td>
-										<td></td>
-										<td></td>
-									</tr>
+										<td><textarea></textarea></td>
+									</tr> -->
 								</tbody>
 							</table>
 						</div>
@@ -126,36 +124,165 @@
 			</div>
 			<div class="layui-form-item layui-row">
 				<div class="layui-inline layui-col-md5">
-					<label class="layui-form-label">所属部门</label>
-					<input type="text" name="addPMdepartment" class="layui-input layui-input-inline" />
-				</div>
-				<div class="layui-inline layui-col-md5">
-					<label class="layui-form-label">制单人员</label>
-					<input type="text" name="addPMprepare-document" class="layui-input layui-input-inline" />
-				</div>
-			</div>
-			<div class="layui-form-item layui-row">
-				<div class="layui-inline layui-col-md5">
 					<label class="layui-form-label">所属项目</label>
 					<input type="text" name="addPMproject" class="layui-input layui-input-inline" />
 				</div>
-				<div class="layui-inline layui-col-md5">
-					<label class="layui-form-label">复核人员</label>
-					<input type="text" name="addPMre-check" class="layui-input layui-input-inline" />
-				</div>
 			</div>
 			<div class="layui-btn-container">
-				<button type="button" class="layui-btn">载入账单</button>
-				<button type="button" class="layui-btn">保存</button>
+				<button type="button" class="layui-btn" onclick="getZD()">载入账单</button>
+				<button type="button" class="layui-btn" onclick="savePrepay()">保存</button>
 			</div>
 		</div>
 		<script src="../layui.all.js"></script>
 		<script src="../js/jquery.min.js"></script>
-		<script>
+		<script type="text/javascript">
+			let baseURL = "http://localhost:8080/";
+			let addPlayer = layui.layer;
+			/* 打开选择供应商页面 */
+			function xzSupplier(event) {
+				if (event.keyCode != 115) {
+					return;
+				}
+				addPlayer.open({
+					type: 2,
+					title: "单选--供应商页面",
+					content: "xcjGetSupplier.html",
+					area: ['762px', '450px']
+				})
+			}
+			/* 加载供应商数据 */
+			function getSupplierDate(id) {
+				$.getJSON(baseURL + "supplier/showSupplierBysid", {
+					sid: id
+				}, function(result) {
+					// console.info(result);
+					// <option value="0">选择供应商</option>
+					$("[name=xcjAddPPgysID]").val(result.sid);
+					$("[name=addPPgyName]").val(result.fullname);
+				})
+			}
+			$(function() {
+				getSupplierDate();
+			})
+			/* 保存预付款单 */
+			function savePrepay() {
+				let prepay = {
+					prepaydetails: []
+				};
+				prepay.id = $("[name=addPMId]").val();
+				prepay.date = $("[name=xcjAddPPTime]").val();
+				prepay.sid = $("[name=xcjAddPPgysID]").val();
+				prepay.paymentmethod1 = $("[name=paymentWay1]").val();
+				prepay.paymentamout1 = $("[name=addPMPayMoney1]").val();
+				prepay.paymentmethod2 = $("[name=paymentWay2]").val();
+				prepay.paymentamout2 = $("[name=addPMPayMoney2]").val();
+				prepay.currencyid = $("[name=addPMCId]").val();
+				prepay.discount = $("[name=addPMdiscount]").val();
+				prepay.enddate = $("[name=xcjAddPPprompt]").val();
+				prepay.exchangerate = $("[name=addPMexchange-rate]").val();
+				prepay.vouchercode = $("[name=addPMDocument-Number]").val();
+				prepay.project = $("[name=addPMproject]").val();
+				prepay.remark = $("[name=addPMremark]").val();
+				prepay.custom1 = $("[name=addPMcustom1]").val();
+				prepay.custom2 = $("[name=addPMcustom12]").val();
+				$("#addPPDs>tr").each(function() {
+					let prepayde = {};
+					prepayde.prepay = $(this).find("input").get(0).value;
+					prepayde.sourceno = $(this).find("td").get(2).innerText;
+					prepayde.sourcetype = $(this).find("td").get(1).innerText;
+					prepayde.remark = $(this).find("textarea").get(0).value;
+					prepay.prepaydetails.push(prepayde);
+				});
+				// console.info(prepay);
+				let payMoney = (Number(prepay.paymentamout1) + Number(prepay.paymentamout2)) * (prepay.discount / 100);
+				let willMoney = 0;
+				// console.info(payMoney);
+				$(prepay.prepaydetails).each(function(i, obj) {
+					willMoney += Number(obj.prepay);
+					// console.info(willMoney);
+				})
+				// 如果支付的金额不一致则不能保存
+				if (payMoney != willMoney) {
+					alert("支付金额不一致");
+					return;
+				}
+				// 如果有必填项为空
+				if (prepay.date == null || prepay.date == "") {
+					alert("请选择日期");
+					return;
+				}
+				if (prepay.sid == null || prepay.sid == "" || prepay.sid == 0) {
+					alert("请选择供应商");
+					return;
+				}
+				if (payMoney == null || payMoney == 0) {
+					alert("请输入预付款");
+					return;
+				}
+				$.ajax({
+					url: baseURL + "tprepar/addTprepay",
+					data: JSON.stringify(prepay),
+					type: "post",
+					contentType: "application/json;charset=utf-8",
+					success: function(res) {
+						if (res > 0) {
+							// 调用父窗体查询方法
+							parent.getPrepayPageDate();
+							parent.showPage();
+							//关闭layer弹出层
+							var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+							parent.layer.close(index);
+						} else {
+							alert("出现错误，保存失败");
+						}
+					}
+				});
+			}
+			/* 转单数据加载 */
+			function getZD() {
+				let sid = $("[name=xcjAddPPgysID]").val();
+				// console.info(sid);
+				if (sid == 0) {
+					alert("请选择供应商！");
+					return;
+				}
+				$.getJSON(baseURL + "tprepar/postZD", {
+					sid: sid
+				}, function(result) {
+					// console.info(result);
+					if (result != null && result.length > 0) {
+						$("#addPPDs").empty();
+						$(result).each(function(i, obj) {
+							let tr = "<tr>" +
+								"<td><input type='number' min='0'></td>" +
+								"<td>" + obj.sourcetype + "</td>" +
+								"<td>" + obj.sourceno + "</td>" +
+								"<td><textarea></textarea></td>" +
+								"</tr>";
+							$("#addPPDs").append(tr);
+						})
+					} else {
+						alert("该供应商暂无符合条件的订单");
+					}
+				});
+			}
+			/* 选择日期自动生成单据编号 */
+			function getId(value) {
+				let date = value;
+				$.get(baseURL + "tprepar/postId", {
+					date: date
+				}, function(result) {
+					// console.info(result);
+					$("[name=addPMId]").val(result);
+				})
+			}
 			var addpaymentlaydate = layui.laydate;
 			//执行一个laydate实例
 			addpaymentlaydate.render({
-				elem: '#xcjAddPPTime' //指定元素
+				elem: '#xcjAddPPTime', //指定元素
+				done: function(value, date, endDate) {
+					getId(value);
+				}
 			});
 			addpaymentlaydate.render({
 				elem: '#xcjAddPPprompt',

@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
-
 	<head>
-		<meta charset="UTF-8">
-		<title>供应商主文件</title>
+		<meta charset="utf-8">
+		<title></title>
 		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 		<link rel="stylesheet" href="../css/font.css">
 		<link rel="stylesheet" href="../css/layui.css" />
@@ -13,7 +12,6 @@
 			}
 		</style>
 	</head>
-
 	<body>
 		<div class="layui-container">
 			<div class="layui-row">
@@ -57,15 +55,14 @@
 						<th>操作</th>
 					</tr>
 				</thead>
-				<tbody id="suppliers">
+				<tbody id="getsuppliers">
 					<tr>
 						<td>1</td>
 						<td>1001</td>
 						<td>许宸剑</td>
 						<td>采购部</td>
 						<td>
-							<button class="layui-btn layui-btn-normal" data-method="opssck" onclick="ssLayerClick(this)">查看</button>
-							<button class="layui-btn layui-btn-danger" onclick="deleteSupplier(id)">删除</button>
+							<button class="layui-btn layui-btn-normal" onclick="getSupplierToP()">取回</button>
 						</td>
 					</tr>
 				</tbody>
@@ -84,6 +81,14 @@
 				getSupplierType();
 				getSupplierinfo();
 			})
+			/* 取回 */
+			function getSupplierToP(id) {
+				// 调用父窗体查询方法
+				parent.getSupplierDate(id);
+				//关闭layer弹出层
+				var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+				parent.layer.close(index);
+			}
 			/* 加载类别 */
 			function getSupplierType() {
 				$.getJSON(baseURL + "supplier/showSuppliercategorys", function(result) {
@@ -95,18 +100,6 @@
 						let op = "<option value=" + obj.classid + ">" + obj.classname + "</option>";
 						$("[name=seachscId]").append(op);
 					});
-				});
-			}
-			/* 删除供应商 */
-			function deleteSupplier(id) {
-				if (!confirm("确认删除该供应商吗？")) {
-					return;
-				}
-				$.post(baseURL + "supplier/deleteSupplier", {
-					sid: id
-				}, function() {
-					getSupplierinfo();
-					showPage();
 				});
 			}
 			/* 加载供应商数据 */
@@ -126,7 +119,7 @@
 				}, function(result) {
 					// console.info(result);
 					total = result.total;
-					$("#suppliers").empty();
+					$("#getsuppliers").empty();
 					if (result.list != null && result.list.length > 0) {
 						$(result.list).each(function(i, obj) {
 							let tr = "<tr>" +
@@ -135,11 +128,10 @@
 								"<td>" + obj.fullname + "</td>" +
 								"<td>" + obj.className + "</td>" +
 								"<td>" +
-								"<button class='layui-btn layui-btn-normal' data-method='opssck' onclick='ssLayerClick(this)'>查看</button>" +
-								"<button class='layui-btn layui-btn-danger' onclick='deleteSupplier(" + obj.sid + ")'>删除</button>" +
+								"<button class='layui-btn layui-btn-normal' onclick='getSupplierToP("+obj.sid+")'>取回</button>"+
 								"</td>" +
 								"</tr>";
-							$("#suppliers").append(tr);
+							$("#getsuppliers").append(tr);
 						})
 					}
 					showPage();
@@ -162,57 +154,6 @@
 					}
 				});
 			}
-			/* layer插件 */
-			var sslayer = layui.layer;
-			var ssactive = {
-				opssAdd: function() {
-					var that = this;
-					sslayer.open({
-						type: 2,
-						title: '新增供应商',
-						shade: 0.5,
-						maxmin: true,
-						area: ['1033px', '90%'],
-						content: 'xcjaddSupplier.html',
-						zIndex: sslayer.zIndex, //重点1
-						success: function(iframe, index) { //iframe=>div
-							//获取子页面中body节点,通过jquery查找节点方式进行赋值
-							let body = layer.getChildFrame('body', index); //获取的子页面HTML所有类容
-							//获取子页面的窗体对象,通过窗体对象对js中的变量或者函数进行调用
-							let iframeWin = window[iframe.find('iframe')[0]['name']];
-							iframeWin.getSupplierType();
-						}
-					});
-				},
-				opssck: function() {
-					var that = this;
-					let id = $(that).parents("tr").find("td").get(1).innerText;
-					sslayer.open({
-						type: 2,
-						title: '查看供应商',
-						shade: 0.5,
-						maxmin: true,
-						area: ['1033px', '90%'],
-						content: 'xcjckSupplier.html',
-						zIndex: sslayer.zIndex, //重点1
-						success: function(iframe, index) { //iframe=>div
-							//获取子页面中body节点,通过jquery查找节点方式进行赋值
-							let body = layer.getChildFrame('body', index); //获取的子页面HTML所有类容
-							//获取子页面的窗体对象,通过窗体对象对js中的变量或者函数进行调用
-							let iframeWin = window[iframe.find('iframe')[0]['name']];
-							iframeWin.getSupplierType();
-							iframeWin.getSupplierByid(id);
-						}
-					});
-				}
-			};
-
-			function ssLayerClick(t) {
-				var ssothis = $(t),
-					method = ssothis.data('method');
-				ssactive[method] ? ssactive[method].call(t, ssothis) : '';
-			}
 		</script>
 	</body>
-
 </html>

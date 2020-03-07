@@ -1,4 +1,4 @@
-就要DROP DATABASE erptable;
+DROP DATABASE erptable;
 CREATE DATABASE erptable;
 USE erptable;
 

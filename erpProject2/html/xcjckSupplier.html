@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="../css/layui.css" />
+		<title></title>
+	</head>
+	<body>
+		<div class="layui-container">
+			<div class="layui-form-item layui-row">
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">编号</label>
+					<div class="layui-input-inline">
+						<input type="text" name="sid" readonly="readonly" class="layui-input layui-input-inline" />
+					</div>
+				</div>
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">类别</label>
+					<div class="layui-input-inline">
+						<select name="classid" lay-verify="required" lay-search="" class="layui-select">
+							<!-- <option value="0">选择供应商</option>
+							<option value="1">layer</option>
+							<option value="2">form</option> -->
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="layui-form-item layui-row">
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">中文全称</label>
+					<input type="text" name="fullname" class="layui-input layui-input-inline" />
+				</div>
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">中文简称</label>
+					<input type="text" name="shortname" class="layui-input layui-input-inline" />
+				</div>
+			</div>
+			<div class="layui-form-item layui-row">
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">英文全称</label>
+					<input type="text" name="engfullname" class="layui-input layui-input-inline" />
+				</div>
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">英文简称</label>
+					<input type="text" name="engshortname" class="layui-input layui-input-inline" />
+				</div>
+			</div>
+			<div class="layui-form-item layui-row">
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">账款归属</label>
+					<input type="text" name="fundsattribution" class="layui-input layui-input-inline" />
+				</div>
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">地区</label>
+					<input type="text" name="area" class="layui-input layui-input-inline" />
+				</div>
+			</div>
+			<div class="layui-form-item layui-row">
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">币别</label>
+					<input type="text" name="currencyid" class="layui-input layui-input-inline" />
+				</div>
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">资本额</label>
+					<input type="text" name="capitalization" class="layui-input layui-input-inline" />
+				</div>
+			</div>
+			<div class="layui-form-item layui-row">
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">负责人</label>
+					<input type="text" name="chiefname" class="layui-input layui-input-inline" />
+				</div>
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">联系人</label>
+					<input type="text" name="linkman" class="layui-input layui-input-inline" />
+				</div>
+			</div>
+			<div class="layui-form-item layui-row">
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">采购人员</label>
+					<input type="hidden" name="personid" />
+					<input type="text" name="personName" readonly="readonly" class="layui-input layui-input-inline" title="F4选择采购人员"
+					 onkeyup="xzEmployee()" />
+				</div>
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">税务登记号</label>
+					<input type="text" name="taxno" class="layui-input layui-input-inline" />
+				</div>
+			</div>
+			<div class="layui-form-item layui-row">
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">单价含税</label>
+					<select name="priceoftax" lay-verify="required" lay-search="" class="layui-select">
+						<option value="0">是</option>
+						<option value="1">否</option>
+					</select>
+				</div>
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">行业</label>
+					<input type="text" name="industrialclass" class="layui-input layui-input-inline" />
+				</div>
+			</div>
+			<div class="layui-form-item layui-row">
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">银行账号</label>
+					<input type="text" name="bankaccount" class="layui-input layui-input-inline" />
+				</div>
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">开户银行</label>
+					<input type="text" name="bank" class="layui-input layui-input-inline" />
+				</div>
+			</div>
+			<div class="layui-form-item layui-row">
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">信用等级</label>
+					<select name="creditlevel" lay-verify="required" lay-search="" class="layui-select">
+						<option value="0">良好</option>
+						<option value="1">一般</option>
+					</select>
+				</div>
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">终止交易日</label>
+					<input type="text" name="invaliddate" class="layui-input layui-input-inline" />
+				</div>
+			</div>
+			<div class="layui-tab layui-tab-card">
+				<ul class="layui-tab-title">
+					<li class="layui-this">账款详情</li>
+					<li>联系方式</li>
+					<li>地址</li>
+					<li>备注</li>
+				</ul>
+				<div class="layui-tab-content">
+					<div class="layui-tab-item layui-show">
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">最初采购入库日</label>
+								<input type="data" name="earliesttradedate" class="layui-input layui-input-inline" />
+							</div>
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">最初采购退货日</label>
+								<input type="date" name="firsttradedate" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">最近采购入库日</label>
+								<input type="date" name="latelytradedate" class="layui-input layui-input-inline" />
+							</div>
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">最近采购退货日</label>
+								<input type="date" name="latelyreturn" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">期初预付款</label>
+								<input type="text" name="startadvrecv" class="layui-input layui-input-inline" />
+							</div>
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">期初应付款</label>
+								<input type="text" name="startreceivable" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">期末预付款</label>
+								<input type="text" name="curAdvRecv" class="layui-input layui-input-inline" />
+							</div>
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">期末应付款</label>
+								<input type="text" name="curReceivable" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">账款额度</label>
+								<input type="text" name="amountquota" class="layui-input layui-input-inline" />
+							</div>
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">剩余额度</label>
+								<input type="text" name="remainQuota" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">付款条件</label>
+								<select name="recvway" lay-verify="required" lay-search="" class="layui-select">
+									<option value="1">货到</option>
+									<option value="2">次月</option>
+									<option value="3">月结</option>
+									<option value="4">其他</option>
+								</select>
+							</div>
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">付款天数</label>
+								<input type="number" min="0" name="distdays" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">每月结账日</label>
+								<input type="number" min="1" max="31" name="dayofclose" class="layui-input layui-input-inline" />
+							</div>
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">月结付款日</label>
+								<input type="number" min="1" max="31" name="dayofrecv" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+					</div>
+					<div class="layui-tab-item">
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">电子邮件</label>
+								<input type="text" name="email" class="layui-input layui-input-inline" />
+							</div>
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">网址</label>
+								<input type="text" name="webaddress" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">传真号码</label>
+								<input type="text" name="faxno" class="layui-input layui-input-inline" />
+							</div>
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">联系电话一</label>
+								<input type="text" name="telephone1" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">联系电话二</label>
+								<input type="text" name="telephone2" class="layui-input layui-input-inline" />
+							</div>
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">联系电话三</label>
+								<input type="text" name="telephone3" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">移动电话</label>
+								<input type="text" name="mobilephone" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+					</div>
+					<div class="layui-tab-item">
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">地址</label>
+								<input type="hidden" name="dzid" />
+								<input type="text" name="dzaddress" class="layui-input layui-input-inline" />
+							</div>
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">邮编</label>
+								<input type="text" name="dzpostcode" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">联系人</label>
+								<input type="text" name="dzcontacts" class="layui-input layui-input-inline" />
+							</div>
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">联系人职称</label>
+								<input type="text" name="dzcontactstot" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">电话</label>
+								<input type="text" name="dzphone" class="layui-input layui-input-inline" />
+							</div>
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">传真号</label>
+								<input type="text" name="dzfaxcode" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+						<div class="layui-form-item layui-form-text">
+							<label class="layui-form-label">路线</label>
+							<div class="layui-input-block">
+								<textarea placeholder="请输入内容" class="layui-textarea" name="dzpath"></textarea>
+							</div>
+						</div>
+						<div class="layui-form-item layui-form-text">
+							<label class="layui-form-label">备注</label>
+							<div class="layui-input-block">
+								<textarea placeholder="请输入内容" class="layui-textarea" name="dzremark"></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="layui-tab-item">
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">自定义一</label>
+								<input type="text" name="coulumn1" class="layui-input layui-input-inline" />
+							</div>
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">自定义二</label>
+								<input type="text" name="coulumn2" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+						<div class="layui-form-item layui-form-text">
+							<label class="layui-form-label">备注</label>
+							<div class="layui-input-block">
+								<textarea placeholder="请输入内容" class="layui-textarea" name="memao"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-btn-container">
+				<button type="button" class="layui-btn" onclick="saveSupplier()">保存</button>
+			</div>
+		</div>
+		<script src="../layui.all.js"></script>
+		<script src="../js/jquery.min.js"></script>
+		<script>
+			/* layer插件 */
+			let addSlayer = layui.layer;
+			let baseURL = "http://localhost:8080/";
+			/* 渲染供应商 */
+			function getSupplierByid(id) {
+				$.getJSON(baseURL + "supplier/showSupplierBysid", {
+					sid: id
+				}, function(result) {
+					console.info(result)
+					//赋值
+					$("[name=sid]").val(result.sid)
+					$("[name=fullname]").val(result.fullname)
+					$("[name=shortname]").val(result.shortname)
+					$("[name=engfullname]").val(result.engfullname)
+					$("[name=engshortname]").val(result.engshortname)
+					$("[name=fundsattribution]").val(result.fundsattribution)
+					$("[name=classid]").val(result.classid)
+					$("[name=area]").val(result.area)
+					$("[name=currencyid]").val(result.currencyid)
+					$("[name=chiefname]").val(result.chiefname)
+					$("[name=linkman]").val(result.linkman)
+					$("[name=personid]").val(result.personid)
+					$("[name=taxno]").val(result.taxno)
+					$("[name=capitalization]").val(result.capitalization)
+					$("[name=industrialclass]").val(result.industrialclass)
+					$("[name=email]").val(result.email)
+					$("[name=webaddress]").val(result.webaddress)
+					$("[name=faxno]").val(result.faxno)
+					$("[name=telephone1]").val(result.telephone1)
+					$("[name=telephone2]").val(result.telephone2)
+					$("[name=telephone3]").val(result.telephone3)
+					$("[name=mobilephone]").val(result.mobilephone)
+					$("[name=bankaccount]").val(result.bankaccount)
+					$("[name=bank]").val(result.bank)
+					$("[name=priceoftax]").val(result.priceoftax)
+					$("[name=invaliddate]").val(result.invaliddate)
+					$("[name=earliesttradedate]").val(result.earliesttradedate)
+					$("[name=firsttradedate]").val(result.firsttradedate)
+					$("[name=latelytradedate]").val(result.latelytradedate)
+					$("[name=latelyreturn]").val(result.latelyreturn)
+					$("[name=startadvrecv]").val(result.startadvrecv)
+					$("[name=startreceivable]").val(result.startreceivable)
+					$("[name=amountquota]").val(result.amountquota)
+					$("[name=recvway]").val(result.recvway)
+					$("[name=distdays]").val(result.distdays)
+					$("[name=dayofclose]").val(result.dayofclose)
+					$("[name=dayofrecv]").val(result.dayofrecv)
+					$("[name=creditlevel]").val(result.creditlevel)
+					$("[name=memao]").val(result.memao)
+					$("[name=coulumn1]").val(result.coulumn1)
+					$("[name=coulumn2]").val(result.coulumn2)
+					let remainQuota = Number(result.amountquota) + Number(result.curAdvRecv) - Number(result.curReceivable)
+					$("[name=remainQuota]").val(remainQuota)
+					$("[name=curAdvRecv]").val(result.curAdvRecv)
+					$("[name=curReceivable]").val(result.curReceivable)
+					$("[name=personName]").val(result.personName)
+					// 供应商地址
+					if (result.supplieraddress != null) {
+						$("[name=dzid]").val(result.supplieraddress.id)
+						$("[name=dzaddress]").val(result.supplieraddress.address)
+						$("[name=dzpostcode]").val(result.supplieraddress.postcode)
+						$("[name=dzcontacts]").val(result.supplieraddress.contacts)
+						$("[name=dzcontactstot]").val(result.supplieraddress.contactstot)
+						$("[name=dzphone]").val(result.supplieraddress.phone)
+						$("[name=dzfaxcode]").val(result.supplieraddress.faxcode)
+						$("[name=dzpath]").val(result.supplieraddress.path)
+						$("[name=dzremark]").val(result.supplieraddress.remark)
+					}
+				});
+			}
+			/* 打开选择员工页面 */
+			function xzEmployee() {
+				if(event.keyCode!=115){
+					return;
+				}
+				addSlayer.open({
+					type: 2,
+					title: "单选--员工页面",
+					content: "xcjGetperson.html",
+					area: ['762px', '450px']
+				})
+			}
+			/* 渲染选择的员工 */
+			function getEmployee(id) {
+				$.getJSON(baseURL + "employee/showEmployeeById", {
+					personid: id
+				}, function(result) {
+					$("[name=personid]").val(result.personid);
+					$("[name=personName]").val(result.name);
+				})
+			}
+			/* 保存供应商 */
+			function saveSupplier() {
+				let supplier = {
+					supplieraddress: {}
+				}
+				//取值
+				supplier.sid = $("[name=sid]").val()
+				supplier.fullname = $("[name=fullname]").val()
+				supplier.shortname = $("[name=shortname]").val()
+				supplier.engfullname = $("[name=engfullname]").val()
+				supplier.engshortname = $("[name=engshortname]").val()
+				supplier.fundsattribution = $("[name=fundsattribution]").val()
+				supplier.classid = $("[name=classid]").val()
+				supplier.area = $("[name=area]").val()
+				supplier.currencyid = $("[name=currencyid]").val()
+				supplier.chiefname = $("[name=chiefname]").val()
+				supplier.linkman = $("[name=linkman]").val()
+				supplier.personid = $("[name=personid]").val()
+				supplier.taxno = $("[name=taxno]").val()
+				supplier.capitalization = $("[name=capitalization]").val()
+				supplier.industrialclass = $("[name=industrialclass]").val()
+				supplier.email = $("[name=email]").val()
+				supplier.webaddress = $("[name=webaddress]").val()
+				supplier.faxno = $("[name=faxno]").val()
+				supplier.telephone1 = $("[name=telephone1]").val()
+				supplier.telephone2 = $("[name=telephone2]").val()
+				supplier.telephone3 = $("[name=telephone3]").val()
+				supplier.mobilephone = $("[name=mobilephone]").val()
+				supplier.bankaccount = $("[name=bankaccount]").val()
+				supplier.bank = $("[name=bank]").val()
+				supplier.priceoftax = $("[name=priceoftax]").val()
+				supplier.invaliddate = $("[name=invaliddate]").val()
+				supplier.earliesttradedate = $("[name=earliesttradedate]").val()
+				supplier.firsttradedate = $("[name=firsttradedate]").val()
+				supplier.latelytradedate = $("[name=latelytradedate]").val()
+				supplier.latelyreturn = $("[name=latelyreturn]").val()
+				supplier.startadvrecv = $("[name=startadvrecv]").val()
+				supplier.startreceivable = $("[name=startreceivable]").val()
+				supplier.amountquota = $("[name=amountquota]").val()
+				supplier.recvway = $("[name=recvway]").val()
+				supplier.distdays = $("[name=distdays]").val()
+				supplier.dayofclose = $("[name=dayofclose]").val()
+				supplier.dayofrecv = $("[name=dayofrecv]").val()
+				supplier.creditlevel = $("[name=creditlevel]").val()
+				supplier.memao = $("[name=memao]").val()
+				supplier.coulumn1 = $("[name=coulumn1]").val()
+				supplier.coulumn2 = $("[name=coulumn2]").val()
+				// supplier.remainQuota=$("[name=remainQuota]").val()
+				// supplier.curAdvRecv=$("[name=curAdvRecv]").val()
+				// supplier.curReceivable=$("[name=curReceivable]").val()
+				// 供应商地址
+				supplier.supplieraddress.id = $("[name=dzid]").val()
+				supplier.supplieraddress.address = $("[name=dzaddress]").val()
+				supplier.supplieraddress.postcode = $("[name=dzpostcode]").val()
+				supplier.supplieraddress.contacts = $("[name=dzcontacts]").val()
+				supplier.supplieraddress.contactstot = $("[name=dzcontactstot]").val()
+				supplier.supplieraddress.phone = $("[name=dzphone]").val()
+				supplier.supplieraddress.faxcode = $("[name=dzfaxcode]").val()
+				supplier.supplieraddress.path = $("[name=dzpath]").val()
+				supplier.supplieraddress.remark = $("[name=dzremark]").val()
+				if (supplier.sid == null || supplier.sid == "") {
+					alert("请输入编号")
+					return;
+				}
+				if (supplier.fullname == null || supplier.fullname == "") {
+					alert("请输入全称")
+					return;
+				}
+				if (supplier.classid == 0) {
+					alert("请选择类别")
+					return;
+				}
+				$.ajax({
+					url: baseURL + "supplier/updateSupplier",
+					data: JSON.stringify(supplier),
+					type: "post",
+					contentType: "application/json;charset=utf-8",
+					success: function(res) {
+						if (res > 0) {
+							// 调用父窗体查询方法
+							parent.getSupplierinfo();
+							// parent.showPage();
+							//关闭layer弹出层
+							var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+							parent.layer.close(index);
+						} else {
+							alert("出现错误，保存失败");
+						}
+					}
+				});
+			}
+			/* 加载类别 */
+			function getSupplierType() {
+				$.getJSON(baseURL + "supplier/showSuppliercategorys", function(result) {
+					// console.info(result);
+					// <option value="0">选择类别</option>
+					$("[name=classid]").empty();
+					$("[name=classid]").append("<option value='0'>选择类别</option>");
+					$(result).each(function(i, obj) {
+						let op = "<option value=" + obj.classid + ">" + obj.classname + "</option>";
+						$("[name=classid]").append(op);
+					});
+				});
+			}
+		</script>
+	</body>
+</html>

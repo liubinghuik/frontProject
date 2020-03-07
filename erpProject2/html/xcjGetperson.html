@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" href="../css/font.css">
+		<link rel="stylesheet" href="../css/layui.css" />
+		<style>
+			#paymentpage {
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="layui-container">
+			<div class="layui-row">
+				<div class="layui-row">
+					<div class="layui-col-md4">
+						<label class="layui-form-label">编号</label>
+						<div class="layui-input-inline">
+							<input type="text" name="seachPsId" placeholder="输入编号查询" class="layui-input" />
+						</div>
+					</div>
+					<div class="layui-col-md4">
+						<label class="layui-form-label">姓名</label>
+						<div class="layui-input-inline">
+							<input type="text" name="seachPsName" placeholder="输入姓名查询" class="layui-input" />
+						</div>
+					</div>
+					<div class="layui-col-md4">
+						<div class="layui-input-inline">
+							<!-- 部门选择 -->
+							<select name="seachDpId" class="layui-select">
+								<!-- <option value="0">选择部门</option>
+							<option value="1">layer</option>
+							<option value="2">form</option> -->
+							</select>
+						</div>
+						<button class="layui-btn layui-btn-normal" onclick="getPersondata()">搜索</button>
+					</div>
+				</div>
+			</div>
+			<table class="layui-table">
+				<thead>
+					<tr>
+						<th>序号</th>
+						<th>编号</th>
+						<th>姓名</th>
+						<th>部门</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody id="getpersons">
+					<tr>
+						<td>1</td>
+						<td>1001</td>
+						<td>许宸剑</td>
+						<td>采购部</td>
+						<td>
+							<button class="layui-btn layui-btn-normal" onclick="getPersonToP()">取回</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div id="personpage"></div>
+		</div>
+		<script src="../layui.all.js"></script>
+		<script src="../js/jquery.min.js"></script>
+		<script>
+			/* 分页 */
+			let total;
+			let pageNum = 1;
+			let pageSize = 10;
+			let baseURL = "http://localhost:8080/";
+			$(function() {
+				getDeportmentData();
+				getPersondata();
+			})
+			/* 取回 */
+			function getPersonToP(id) {
+				// 调用父窗体查询方法
+				parent.getEmployee(id);
+				//关闭layer弹出层
+				var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+				parent.layer.close(index);
+			}
+			/* 加载人员数据 */
+			function getPersondata() {
+				let personID = $("[name=seachPsId]").val();
+				let name = $("[name=seachPsName]").val();
+				let departID = $("[name=seachDpId]").val();
+				if (departID == 0) {
+					departID = null;
+				}
+				$.getJSON(baseURL + "employee/showPerson", {
+					pageNum: pageNum,
+					pageSize: pageSize,
+					personID: personID,
+					name: name,
+					departID: departID
+				}, function(result) {
+					console.info(result);
+					total = result.total;
+					$("#getpersons").empty();
+					if (result.list != null && result.list.length > 0) {
+						$(result.list).each(function(i, obj) {
+							let tr = "<tr>" +
+								"<td>" + (i + 1) + "</td>" +
+								"<td>" + obj.personid + "</td>" +
+								"<td>" + obj.name + "</td>" +
+								"<td>" + obj.departName + "</td>" +
+								"<td>" +
+								"<button class='layui-btn layui-btn-normal' onclick='getPersonToP("+obj.personid+")'>取回</button>" +
+								"</td>" +
+								"</tr>";
+							$("#getpersons").append(tr);
+						})
+					}
+					showPage();
+				})
+			}
+			/* 加载分页插件 */
+			function showPage() {
+				var paymentpage = layui.laypage;
+				paymentpage.render({
+					elem: 'personpage',
+					count: total,
+					limit: pageSize,
+					groups: 3,
+					jump: function(obj, first) {
+						/* 跳转回调 */
+						pageNum = obj.curr;
+						if (!first) {
+							getPersondata();
+						}
+					}
+				});
+			}
+			/* 加载部门数据 */
+			function getDeportmentData() {
+				$.getJSON(baseURL + "employee/showDepartments", function(result) {
+					// console.info(result);
+					// <option value="0">选择供应商</option>
+					$("[name=seachDpId]").empty();
+					$("[name=seachDpId]").append("<option value='0'>选择部门</option>")
+					if (result != null && result.length > 0) {
+						$(result).each(function(i, obj) {
+							let op = "<option value='" + obj.departid + "'>" + obj.departname + "</option>";
+							$("[name=seachDpId]").append(op);
+						})
+					}
+				})
+			}
+		</script>
+	</body>
+</html>

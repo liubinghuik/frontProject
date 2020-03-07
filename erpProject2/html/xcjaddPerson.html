@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="../css/layui.css" />
+		<title></title>
+	</head>
+	<body>
+		<div class="layui-container" id="xcjPsInfo">
+			<div class="layui-form-item layui-row">
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">编号</label>
+					<div class="layui-input-inline">
+						<input type="text" name="psId" class="layui-input layui-input-inline" />
+					</div>
+				</div>
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">部门</label>
+					<div class="layui-input-inline">
+						<select name="psDpId" lay-verify="required" lay-search="" class="layui-select">
+							<!-- <option value="0">选择供应商</option>
+							<option value="1">layer</option>
+							<option value="2">form</option> -->
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="layui-form-item layui-row">
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">姓名</label>
+					<input type="text" name="psName" class="layui-input layui-input-inline" />
+				</div>
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">英文姓名</label>
+					<input type="text" name="psEName" class="layui-input layui-input-inline" />
+				</div>
+			</div>
+			<div class="layui-form-item layui-row">
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">身份证</label>
+					<input type="text" name="psIdCard" class="layui-input layui-input-inline" />
+				</div>
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">生日</label>
+					<input type="date" name="psBDay" class="layui-input layui-input-inline" />
+				</div>
+			</div>
+			<div class="layui-form-item layui-row">
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">性别</label>
+					<input type="radio" name="psSex" value="0" checked="checked" />
+					<label>男</label>
+					<input type="radio" name="psSex" value="1" />
+					<label>女</label>
+				</div>
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">电话</label>
+					<input type="text" name="psPhone" class="layui-input layui-input-inline" />
+				</div>
+			</div>
+			<div class="layui-form-item layui-row">
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">职务</label>
+					<input type="text" name="psJob" class="layui-input layui-input-inline" />
+				</div>
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">邮编</label>
+					<input type="text" name="psPostcode" class="layui-input layui-input-inline" />
+				</div>
+			</div>
+			<div class="layui-form-item layui-row">
+				<div class="layui-inline layui-col-md5">
+					<label class="layui-form-label">密码</label>
+					<input type="text" name="psPwd" class="layui-input layui-input-inline" />
+				</div>
+			</div>
+			<div class="layui-tab layui-tab-card">
+				<ul class="layui-tab-title">
+					<li class="layui-this">详情</li>
+					<li>备注</li>
+				</ul>
+				<div class="layui-tab-content">
+					<div class="layui-tab-item layui-show">
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">入职日期</label>
+								<input type="date" name="psEntrydate" class="layui-input layui-input-inline" value="now" />
+							</div>
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">转正日期</label>
+								<input type="date" name="psRegudate" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">离职日期</label>
+								<input type="date" name="psDimissiondate" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+						<div class="layui-form-item layui-form-text">
+							<label class="layui-form-label">地址</label>
+							<div class="layui-input-block">
+								<textarea placeholder="请输入内容" class="layui-textarea" name="psAddress"></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="layui-tab-item">
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">自定义一</label>
+								<input type="text" name="psCustom1" class="layui-input layui-input-inline" />
+							</div>
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">自定义二</label>
+								<input type="text" name="psCustom2" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+						<div class="layui-form-item layui-row">
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">自定义三</label>
+								<input type="text" name="psCustom3" class="layui-input layui-input-inline" />
+							</div>
+							<div class="layui-inline layui-col-md5">
+								<label class="layui-form-label">自定义四</label>
+								<input type="text" name="psCustom4" class="layui-input layui-input-inline" />
+							</div>
+						</div>
+						<div class="layui-form-item layui-form-text">
+							<label class="layui-form-label">备注</label>
+							<div class="layui-input-block">
+								<textarea placeholder="请输入内容" class="layui-textarea" name="psRemark"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-btn-container">
+				<button type="button" class="layui-btn" onclick="savePerson()">保存</button>
+			</div>
+		</div>
+		<script src="../layui.all.js"></script>
+		<script src="../js/jquery.min.js"></script>
+		<script>
+			let baseURL = "http://localhost:8080/";
+			$(function() {
+				getDeportmentData();
+				/* 显示当前日期 */
+				let time = new Date()
+				let day = ('0' + time.getDate()).slice(-2)
+				let month = ('0' + (time.getMonth() + 1)).slice(-2)
+				let today = time.getFullYear() + '-' + month + '-' + day
+				$("[name=psEntrydate]").val(today)
+			})
+
+			function savePerson() {
+				let isExist=false;
+				let employee = {};
+				employee.personid = $("[name=psId]").val();
+				employee.name = $("[name=psName]").val();
+				employee.pwd = $("[name=psPwd]").val();
+				employee.englishname = $("[name=psEName]").val();
+				employee.departid = $("[name=psDpId]").val();
+				employee.sex = $("[name=psSex]").val();
+				employee.idcard = $("[name=psIdCard]").val();
+				employee.birthday = $("[name=psBDay]").val();
+				employee.duty = $("[name=psJob]").val();
+				employee.postcode = $("[name=psPostcode]").val();
+				employee.phone = $("[name=psPhone]").val();
+				employee.entrydate = $("[name=psEntrydate]").val();
+				employee.regularizationdate = $("[name=psRegudate]").val();
+				employee.dimissiondate = $("[name=psDimissiondate]").val();
+				employee.address = $("[name=psAddress]").val();
+				employee.state = 0;
+				employee.remark = $("[name=psRemark]").val();
+				employee.custom1 = $("[name=psCustom1]").val();
+				employee.custom2 = $("[name=psCustom2]").val();
+				employee.custom3 = $("[name=psCustom3]").val();
+				employee.custom4 = $("[name=psCustom4]").val();
+				if (employee.personid == null || employee.personid == "") {
+					alert("请输入编号")
+					return;
+				}
+				if (employee.name == null || employee.name == "") {
+					alert("请输入姓名")
+					return;
+				}
+				if (employee.pwd == null || employee.pwd == "") {
+					alert("请输入密码")
+					return;
+				}
+				if (employee.departid == null || employee.pwd == 0) {
+					alert("请输入部门")
+					return;
+				}
+				$.get(baseURL+"employee/idIsExist",{personid:employee.personid},function(result){
+					if(result){
+						alert("编号重复，请重新输入");
+						$("[name=psId]").val("");
+						isExist=true;
+					}
+				})
+				if(isExist){
+					return;
+				}
+				$.ajax({
+					url: baseURL + "employee/addEmployee",
+					data: JSON.stringify(employee),
+					type: "post",
+					contentType: "application/json;charset=utf-8",
+					success: function(res) {
+						if (res > 0) {
+							// 调用父窗体查询方法
+							parent.getPersondata();
+							// parent.showPage();
+							//关闭layer弹出层
+							var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+							parent.layer.close(index);
+						} else {
+							alert("出现错误，保存失败");
+						}
+					}
+				});
+			}
+			/* 加载部门数据 */
+			function getDeportmentData() {
+				$.getJSON(baseURL + "employee/showDepartments", function(result) {
+					// console.info(result);
+					// <option value="0">选择供应商</option>
+					$("[name=psDpId]").empty();
+					$("[name=psDpId]").append("<option value='0'>选择部门</option>")
+					if (result != null && result.length > 0) {
+						$(result).each(function(i, obj) {
+							let op = "<option value='" + obj.departid + "'>" + obj.departname + "</option>";
+							$("[name=psDpId]").append(op);
+						})
+					}
+				})
+			}
+		</script>
+	</body>
+</html>
